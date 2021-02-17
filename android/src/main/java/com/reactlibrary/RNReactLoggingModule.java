@@ -29,7 +29,7 @@ public class RNReactLoggingModule extends ReactContextBaseJavaModule {
     private String tag = "RNReactLogging";
     private boolean consoleLog = true;
     private boolean fileLog = false;
-    private long maxFileSize = 512 * 1024; // 512 kb
+    private int maxFileSize = 512 * 1024; // 512 kb
 
     public RNReactLoggingModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -70,8 +70,8 @@ public class RNReactLoggingModule extends ReactContextBaseJavaModule {
 
 
     String writeLogToFile(String content) {
-        File logDirectory = new File( Environment.getExternalStorageDirectory() + "/" + tag );
-        File logFolder = new File(logDirectory + "/log");
+        File logDirectory = this.reactContext.getExternalFilesDir(null);
+        File logFolder = new File(logDirectory + "/logs");
 
         // create app folder
         if ( !logDirectory.exists() ) {
@@ -161,13 +161,13 @@ public class RNReactLoggingModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void setMaxFileSize(long maxFileSize) {
+    public void setMaxFileSize(int maxFileSize) {
         this.maxFileSize = maxFileSize;
     }
 
     @ReactMethod
     public void listAllLogFiles(Promise promise) {
-        File logFolder = new File(this.reactContext.getFilesDir().getAbsolutePath() + "/rn-loggings");
+        File logFolder = new File(this.reactContext.getExternalFilesDir(null) + "/rn-logs/log");
         WritableArray result = new WritableNativeArray();
         if (!logFolder.exists() && !logFolder.mkdir()) {
             promise.resolve(result);
